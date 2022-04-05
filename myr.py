@@ -27,7 +27,7 @@ def translate_message(txt):
       lang_to = "uk"
 
     r = translator.translate(txt, src=lang_from, dest=lang_to).text
-  except print(0):
+  except:
     pass
   return r
 
