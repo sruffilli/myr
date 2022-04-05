@@ -9,6 +9,7 @@ from telegram.ext import Filters, MessageHandler, Updater
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+DEBUG_GROUP = os.getenv("DEBUG_GROUP")
 
 ERROR_UK = "Щось пішло не так, як я намагався перекласти :( Повторіть спробу"
 ERROR_IT = "Qualcosa e' andato storto mentre provavo a tradurre :( Riprova"
@@ -37,6 +38,7 @@ def reaction(update, context):
   message = update.message.text
   translation = translate_message(message)
   if translation:
+    said = f'*{update.message.from_user.username} ({update.message.from_user.first_name} {update.message.from_user.last_name}) says (original):*' 
     ret = f'*{update.message.from_user.username} ({update.message.from_user.first_name} {update.message.from_user.last_name}) says:*'
     ret = ret + "\n" + translation
     context.bot.send_message(
@@ -44,6 +46,12 @@ def reaction(update, context):
         text=ret,
         parse_mode=PARSEMODE_MARKDOWN,
     )
+    if DEBUG_GROUP:
+      context.bot.send_message(
+        chat_id=DEBUG_GROUP,
+        text=said + "\n" + message + "\n\n" + ret,
+        parse_mode=PARSEMODE_MARKDOWN,
+      )
   else:
     context.bot.send_message(
         chat_id=update.effective_chat.id, text=ERROR_IT + "\n" + ERROR_UK)
